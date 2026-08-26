@@ -6,39 +6,29 @@ Backend for the Agritech Marketplace project built with FastAPI and PostgreSQL.
 
 ## Folder Structure
 
-agri/
-│
-├── README.md
-├── .gitignore
-│
-└── backend/
-    │
-    ├── .env
-    ├── .venv/
-    ├── Dockerfile
-    ├── alembic.ini
-    ├── requirements.txt
-    │
-    ├── alembic/
-    │   ├── env.py
-    │   └── versions/
-    │       └── 001_initial.py
-    │
-    └── app/
-        ├── main.py
-        │
-        ├── api/
-        │   └── v1/
-        │
-        ├── core/
-        │
-        ├── db/
-        │
-        ├── models/
-        │
-        └── schemas/
+## Folder Structure
 
-    
+- `agri/`
+  - `README.md`
+  - `.gitignore`
+  - `backend/`
+    - `.env`
+    - `.venv/`
+    - `Dockerfile`
+    - `alembic.ini`
+    - `requirements.txt`
+    - `alembic/`
+      - `env.py`
+      - `versions/`
+        - `001_initial.py`
+    - `app/`
+      - `main.py`
+      - `api/`
+        - `v1/`
+      - `core/`
+      - `db/`
+      - `models/`
+      - `schemas/`    
 ## Setup
 
 ### Step 1 — Go to the backend
