@@ -4,11 +4,15 @@ Backend for the Agritech Marketplace project built with FastAPI and PostgreSQL.
 
 ## Folder Structure
 
+## Folder Structure
+
 agri/
+│
 ├── README.md
 ├── .gitignore
 │
 └── backend/
+    │
     ├── .env
     ├── .venv/
     ├── Dockerfile
@@ -22,12 +26,19 @@ agri/
     │
     └── app/
         ├── main.py
+        │
         ├── api/
+        │   └── v1/
+        │
         ├── core/
+        │
         ├── db/
+        │
         ├── models/
+        │
         └── schemas/
 
+    
 ## Setup
 
 ### Step 1 — Go to the backend
