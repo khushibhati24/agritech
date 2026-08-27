@@ -1,0 +1,244 @@
+Absolutely. Now that the structure is settled, let's understand the project **from the inside out**.
+
+Think of the backend like this:
+
+**Request → API → Schema → Logic → Database → Response**
+
+And each folder/file has a specific job.
+
+### 1. `backend/`
+
+This is the actual backend project.
+
+* `.env` → Stores private configuration such as database URL, secret keys, etc.
+* `.venv/` → Python virtual environment. Contains the packages used by this project.
+* `requirements.txt` → List of Python packages required to run the backend.
+* `Dockerfile` → Instructions for packaging the backend into a Docker container.
+* `alembic.ini` → Configuration file for Alembic database migrations.
+
+---
+
+### 2. `alembic/`
+
+This handles **database structure changes**.
+
+* `env.py` → Connects Alembic to your application/database and tells it how to run migrations.
+* `versions/` → Stores migration files.
+* `001_initial.py` → Our first migration. It creates the initial tables:
+
+  * `users`
+  * `farmer_profiles`
+  * `buyer_profiles`
+  * `transporter_profiles`
+  * `admin_logs`
+  * `revoked_tokens`
+  * `user_role` enum
+
+So basically:
+
+**Alembic = manages the database structure over time.**
+
+---
+
+### 3. `app/`
+
+This is where the actual FastAPI application lives.
+
+#### `main.py`
+
+This is the **entry point of the FastAPI application**.
+
+It:
+
+* Creates the FastAPI app
+* Loads configuration
+* Enables CORS
+* Adds middleware
+* Adds exception handlers
+* Includes API routes
+* Provides `/`
+* Provides `/health`
+
+When we run:
+
+```bash
+uvicorn app.main:app --reload
+```
+
+this is the `app` inside `main.py` that Uvicorn starts.
+
+---
+
+### 4. `app/api/`
+
+This contains the **API endpoints**.
+
+Inside it:
+
+```text
+api/
+└── v1/
+```
+
+`v1` means **version 1 of our API**.
+
+Inside `v1` we currently have:
+
+* `router.py` → Combines all the API routes together.
+* `auth.py` → Authentication-related endpoints.
+* `users.py` → User-related endpoints.
+* `farmers.py` → Farmer endpoints.
+* `buyers.py` → Buyer endpoints.
+* `transporters.py` → Transporter endpoints.
+* `admin.py` → Admin endpoints.
+
+Important: **having these files does not mean every feature inside them is fully tested/working yet.** We are only confirming the infrastructure at this stage.
+
+---
+
+### 5. `app/core/`
+
+This contains the application's **common/core functionality**.
+
+* `config.py` → Reads configuration and environment variables.
+* `dependencies.py` → Reusable FastAPI dependencies, such as things endpoints may need before running.
+* `exceptions.py` → Handles API errors and validation errors consistently.
+* `middleware.py` → Middleware that runs around requests, currently including logging functionality.
+* `rate_limiter.py` → Handles request rate limiting.
+* `security.py` → Security-related functionality such as authentication/security helpers.
+
+Think of `core` as:
+
+**"Important things that many parts of the application need."**
+
+---
+
+### 6. `app/db/`
+
+This handles the **database connection**.
+
+* `session.py` → Creates the SQLAlchemy database engine/session setup.
+* `base.py` → Provides the SQLAlchemy base used by database models.
+
+This is the bridge between:
+
+**FastAPI ↔ SQLAlchemy ↔ PostgreSQL**
+
+---
+
+### 7. `app/models/`
+
+Models describe **what our database tables look like in Python**.
+
+* `user.py` → User database model.
+* `token.py` → Revoked-token database model.
+* `__init__.py` → Makes the models package importable.
+
+For example, our `User` model represents the `users` table in PostgreSQL.
+
+---
+
+### 8. `app/schemas/`
+
+Schemas describe **what data comes into and goes out of the API**.
+
+We have:
+
+* `user.py` → User request/response schemas.
+* `auth.py` → Authentication data schemas.
+* `farmer.py` → Farmer data schemas.
+* `buyer.py` → Buyer data schemas.
+* `transporter.py` → Transporter data schemas.
+* `admin.py` → Admin data schemas.
+
+This is different from `models`.
+
+**Model = database structure**
+
+**Schema = API data structure**
+
+For example:
+
+```text
+Client
+   ↓
+JSON request
+   ↓
+Schema validates it
+   ↓
+API logic
+   ↓
+Database Model
+   ↓
+PostgreSQL
+```
+
+---
+
+### 9. `__init__.py`
+
+You'll see these in several folders.
+
+They're basically Python's way of treating those directories as **Python packages** and allowing imports between them.
+
+For example:
+
+```python
+from app.models.user import User
+```
+
+works because of the package structure.
+
+---
+
+## So the whole project looks like this
+
+```text
+                    CLIENT
+                      │
+                      ▼
+                FastAPI
+                 main.py
+                      │
+                      ▼
+                API Routes
+                 api/v1/
+                      │
+                      ▼
+                  Schemas
+                 schemas/
+                      │
+                      ▼
+                 Application
+                core/ + logic
+                      │
+                      ▼
+                 SQLAlchemy
+                  db/ + models/
+                      │
+                      ▼
+                 PostgreSQL
+```
+
+And separately:
+
+```text
+SQLAlchemy Models
+       │
+       ▼
+    Alembic
+       │
+       ▼
+Database Migrations
+       │
+       ▼
+ PostgreSQL Structure
+```
+
+### The important distinction
+
+Right now, we've successfully built the **foundation** of the backend:
+
+**FastAPI ✅ → PostgreSQL ✅ → SQLAlchemy ✅ → Alembic ✅ → Initial database schema ✅**
+
+The next thing isn't to randomly add more files. We should take one feature—most logically **user registration**—and trace it completely from request → validation → database → response. That will make the entire architecture click.
