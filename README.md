@@ -4,10 +4,6 @@ Backend for the Agritech Marketplace project built with FastAPI and PostgreSQL.
 
 ## Folder Structure
 
-## Folder Structure
-
-## Folder Structure
-
 - `agri/`
   - `README.md`
   - `.gitignore`
